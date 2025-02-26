@@ -3,6 +3,7 @@ package com.api.rover.controllers;
 import com.api.rover.dtos.DireccionDto;
 import com.api.rover.models.Rover;
 import com.api.rover.services.RoverService;
+import com.api.rover.services.RoverServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +15,9 @@ public class RoverController {
     @Autowired
     private RoverService roverService;
     @GetMapping
-    public ResponseEntity<Rover> get(){
-        Rover r = roverService.getRover();
-        return ResponseEntity.ok(r);
+    public Rover get(){
+        Rover rover = roverService.getRover();
+        return rover;
     }
     @PutMapping("/direction")
     public ResponseEntity<String> setDirection(@RequestBody DireccionDto direccionDto){

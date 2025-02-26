@@ -7,4 +7,5 @@ public interface RoverService {
     Rover getRover();
 
     void setDirection(DireccionDto direccionDto);
+
 }

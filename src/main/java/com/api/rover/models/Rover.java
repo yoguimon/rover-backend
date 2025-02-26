@@ -18,4 +18,17 @@ public class Rover {
     @Enumerated(EnumType.STRING)
     @Column(name = "direction")
     private Direction direction;
+
+    public void setDirection(Direction direction) {
+        this.direction = direction;
+    }
+
+    @Override
+    public String toString() {
+        return "Rover{" +
+                "x=" + x +
+                ", y=" + y +
+                ", direction=" + direction +
+                '}';
+    }
 }
