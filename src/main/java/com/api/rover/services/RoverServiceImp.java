@@ -1,6 +1,7 @@
 package com.api.rover.services;
 
 import com.api.rover.dtos.DireccionDto;
+import com.api.rover.dtos.RoverDataDto;
 import com.api.rover.models.Direction;
 import com.api.rover.models.Rover;
 import com.api.rover.repositories.RoverRepository;
@@ -9,51 +10,67 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Arrays;
 
 @Service
 public class RoverServiceImp implements RoverService{
     @Autowired
-    RoverRepository roverRepository;
+    private RoverRepository roverRepository;
+    private static final List<String> DIRECTIONS = List.of("NORTH", "EAST", "SOUTH", "WEST");
     @Override
     @Transactional
     public Rover getRover() {
-        Rover rover = roverRepository.findAll().get(0);
-        return rover;
+        return roverRepository.findAll()
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Rover not found"));
     }
 
     @Override
     public void setDirection(DireccionDto direccionDto) {
+        Rover rover = getRover();
         String res = updateDirecion(direccionDto);
-        Rover rover = roverRepository.findAll()
-                .stream()
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Rover not found"));
         rover.setDirection(Direction.valueOf(res));
         roverRepository.save(rover);
     }
-    public String updateDirecion(DireccionDto direccionDto){
-        List<String> pos = Arrays.asList("NORTH","EAST","SOUTH","WEST");
-        String res="";
-        switch (direccionDto.getHeadPosition()){
-            case "LEFT":
-                int aux1 = pos.indexOf(direccionDto.getActualDirection());
-                if(pos.size()-1==aux1){
-                    res = pos.get(0);
-                }else{
-                    res = pos.get(aux1+1);
-                }
+
+    @Override
+    public void move(RoverDataDto roverDataDto) {
+        Rover rover = getRover();
+        int moveStep = (roverDataDto.getUpOrdown() == 1) ? 5 : -5; // 5 for forward, -5 for back
+        switch (rover.getDirection()) {
+            case NORTH:
+                rover.setY(rover.getY() - moveStep);
                 break;
-            case "RIGHT":
-                int aux2 = pos.indexOf(direccionDto.getActualDirection());
-                if(aux2==0){
-                    res = pos.get(pos.size()-1);
-                }else{
-                    res = pos.get(aux2-1);
-                }
+            case EAST:
+                rover.setX(rover.getX() + moveStep);
+                break;
+            case SOUTH:
+                rover.setY(rover.getY() + moveStep);
+                break;
+            case WEST:
+                rover.setX(rover.getX() - moveStep);
                 break;
         }
-        return res;
+        roverRepository.save(rover);
+    }
+
+    public String updateDirecion(DireccionDto direccionDto){
+        int currentIndex = DIRECTIONS.indexOf(direccionDto.getActualDirection());
+        if (currentIndex == -1) {
+            throw new IllegalArgumentException("Invalid direction: " + direccionDto.getActualDirection());
+        }
+        int newIndex = currentIndex;
+        switch (direccionDto.getHeadPosition().toUpperCase()) {
+            case "LEFT":
+                newIndex = (currentIndex + 1) % DIRECTIONS.size();
+                break;
+            case "RIGHT":
+                newIndex = (currentIndex - 1 + DIRECTIONS.size()) % DIRECTIONS.size();
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid head position: " + direccionDto.getHeadPosition());
+        }
+        return DIRECTIONS.get(newIndex);
     }
 
 

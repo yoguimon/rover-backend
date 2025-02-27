@@ -9,10 +9,10 @@ async function getRover(){
             }
     });
     rover = await request.json();
-    updateRoverPosition(rover);
+    updateRoverPosition();
 
 }
-function updateRoverPosition(rover){
+function updateRoverPosition(){
     const roverImg = document.getElementById("rover");
 
     roverImg.style.left = rover.x + "%";
@@ -40,13 +40,17 @@ document.addEventListener("keydown", function(event) {
     switch (event.key) {
         case "ArrowUp":
             console.log("Presionaste ↑ (Arriba)");
-            rover.x+=5;
+            data.rover=rover;
+            data.upOrdown=1;
+            moveRover(data);
             console.log("posx=",rover.x);
             console.log("posy=",rover.y);
             break;
         case "ArrowDown":
             console.log("Presionaste ↓ (Abajo)");
-            rover.y+=5;
+            data.rover=rover;
+            data.upOrdown=0;
+            moveRover(data);
             console.log("posx=",rover.x);
             console.log("posy=",rover.y);
             break;
@@ -63,7 +67,6 @@ document.addEventListener("keydown", function(event) {
             changeDirectionDB(data);
             break;
     }
-    getRover(rover);
 });
 
 async function changeDirectionDB(data){
@@ -75,6 +78,20 @@ async function changeDirectionDB(data){
         },
         body: JSON.stringify(data)
       });
-      const response = await request.text();
+     const response = await request.text();
+     getRover();
+     console.log(response);
+}
+async function moveRover(data){
+     const request = await fetch('api/rover/move', {
+        method: 'PUT',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+     const response = await request.text();
+     getRover();
      console.log(response);
 }
