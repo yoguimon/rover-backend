@@ -30,13 +30,14 @@ public class RoverController {
     }
     @PutMapping("/move")
     public ResponseEntity<String> moveRover(@RequestBody RoverDataDto roverDataDto){
-        System.out.println("rover:"+roverDataDto.getRover());
-        System.out.println("updowm:"+roverDataDto.getUpOrdown());
         try {
-            roverService.move(roverDataDto);
-            return ResponseEntity.ok("Rover move successfully");
+            String result = roverService.move(roverDataDto);
+            if (result.equals("Posición fuera del mapa")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            }
+            return ResponseEntity.ok(result);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 }

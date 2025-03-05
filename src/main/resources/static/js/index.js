@@ -43,16 +43,12 @@ document.addEventListener("keydown", function(event) {
             data.rover=rover;
             data.upOrdown=1;
             moveRover(data);
-            console.log("posx=",rover.x);
-            console.log("posy=",rover.y);
             break;
         case "ArrowDown":
             console.log("Presionaste ↓ (Abajo)");
             data.rover=rover;
             data.upOrdown=0;
             moveRover(data);
-            console.log("posx=",rover.x);
-            console.log("posy=",rover.y);
             break;
         case "ArrowLeft":
             console.log("Presionaste ← (Izquierda)");

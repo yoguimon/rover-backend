@@ -34,7 +34,7 @@ public class RoverServiceImp implements RoverService{
     }
 
     @Override
-    public void move(RoverDataDto roverDataDto) {
+    public String move(RoverDataDto roverDataDto) {
         Rover rover = getRover();
         int moveStep = (roverDataDto.getUpOrdown() == 1) ? 5 : -5; // 5 for forward, -5 for back
         switch (rover.getDirection()) {
@@ -51,7 +51,11 @@ public class RoverServiceImp implements RoverService{
                 rover.setX(rover.getX() - moveStep);
                 break;
         }
+        if (rover.getX() < 2 || rover.getX() > 92 || rover.getY() < 0 || rover.getY() > 85) {
+            return "Posición fuera del mapa";
+        }
         roverRepository.save(rover);
+        return "Rover movido exitosamente";
     }
 
     public String updateDirecion(DireccionDto direccionDto){

@@ -9,5 +9,5 @@ public interface RoverService {
 
     void setDirection(DireccionDto direccionDto);
 
-    void move(RoverDataDto roverDataDto);
+    String move(RoverDataDto roverDataDto);
 }
