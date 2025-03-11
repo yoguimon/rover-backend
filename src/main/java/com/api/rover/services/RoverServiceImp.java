@@ -26,39 +26,48 @@ public class RoverServiceImp implements RoverService{
     }
 
     @Override
+    @Transactional
     public void setDirection(DireccionDto direccionDto) {
         Rover rover = getRover();
-        String res = updateDirecion(direccionDto);
+        String res = updateDirection(direccionDto);
         rover.setDirection(Direction.valueOf(res));
         roverRepository.save(rover);
     }
 
     @Override
+    @Transactional
     public String move(RoverDataDto roverDataDto) {
         Rover rover = getRover();
         int moveStep = (roverDataDto.getUpOrdown() == 1) ? 5 : -5; // 5 for forward, -5 for back
+        // Calculamos la nueva posición sin modificar directamente el rover
+        int newX = rover.getX();
+        int newY = rover.getY();
         switch (rover.getDirection()) {
             case NORTH:
-                rover.setY(rover.getY() - moveStep);
+                newY -= moveStep;
                 break;
             case EAST:
-                rover.setX(rover.getX() + moveStep);
+                newX += moveStep;
                 break;
             case SOUTH:
-                rover.setY(rover.getY() + moveStep);
+                newY += moveStep;
                 break;
             case WEST:
-                rover.setX(rover.getX() - moveStep);
+                newX -= moveStep;
                 break;
         }
-        if (rover.getX() < 2 || rover.getX() > 92 || rover.getY() < 0 || rover.getY() > 85) {
+        // Verificamos si la nueva posición esta dentro de los limites
+        if (newX < 2 || newX > 92 || newY < 0 || newY > 85) {
             return "Posición fuera del mapa";
         }
+        // Si es válida, actualizamos y guardamos el rover
+        rover.setX(newX);
+        rover.setY(newY);
         roverRepository.save(rover);
         return "Rover movido exitosamente";
     }
 
-    public String updateDirecion(DireccionDto direccionDto){
+    public String updateDirection(DireccionDto direccionDto){
         int currentIndex = DIRECTIONS.indexOf(direccionDto.getActualDirection());
         if (currentIndex == -1) {
             throw new IllegalArgumentException("Invalid direction: " + direccionDto.getActualDirection());
