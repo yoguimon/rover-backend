@@ -1,4 +1,12 @@
-
+Swal.fire({
+  title: "Rover!",
+  text: "🡱 Adelante 🡳 Atras 🡰 Girar izquierda 🡲 Girar derecha",
+  imageUrl: "https://static.vecteezy.com/system/resources/previews/006/059/930/non_2x/pc-keyboard-arrow-keys-linear-icon-isolated-on-white-background-free-vector.jpg",
+  imageWidth: 300,
+  imageHeight: 200,
+  imageAlt: "Rover",
+  confirmButtonColor: "#82593B"
+});
 let rover = {};
 getRover();
 getObstacles();

@@ -3,6 +3,7 @@ package com.api.rover.services;
 import com.api.rover.dtos.DireccionDto;
 import com.api.rover.dtos.RoverDataDto;
 import com.api.rover.models.Direction;
+import com.api.rover.models.Obstacle;
 import com.api.rover.models.Rover;
 import com.api.rover.repositories.RoverRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import java.util.List;
 public class RoverServiceImp implements RoverService{
     @Autowired
     private RoverRepository roverRepository;
+    @Autowired
+    private ObstacleServiceImp obstacleServiceImp;
     private static final List<String> DIRECTIONS = List.of("NORTH", "EAST", "SOUTH", "WEST");
     @Override
     @Transactional
@@ -38,6 +41,7 @@ public class RoverServiceImp implements RoverService{
     @Transactional
     public String move(RoverDataDto roverDataDto) {
         Rover rover = getRover();
+        List<Obstacle> obstacles = obstacleServiceImp.getAllObstacles();
         int moveStep = (roverDataDto.getUpOrdown() == 1) ? 5 : -5; // 5 for forward, -5 for back
         // Calculamos la nueva posición sin modificar directamente el rover
         int newX = rover.getX();
@@ -59,6 +63,11 @@ public class RoverServiceImp implements RoverService{
         // Verificamos si la nueva posición esta dentro de los limites
         if (newX < 2 || newX > 92 || newY < 0 || newY > 85) {
             return "Posición fuera del mapa";
+        }
+        for(Obstacle ob : obstacles){
+            if (ob.getX()==newX&&ob.getY()==newY){
+                return "Colision con un obstaculo";
+            }
         }
         // Si es válida, actualizamos y guardamos el rover
         rover.setX(newX);

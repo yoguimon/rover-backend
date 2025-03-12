@@ -32,7 +32,7 @@ public class RoverController {
     public ResponseEntity<String> moveRover(@RequestBody RoverDataDto roverDataDto){
         try {
             String result = roverService.move(roverDataDto);
-            if (result.equals("Posición fuera del mapa")) {
+            if (result.equals("Posición fuera del mapa")||result.equals("Colision con un obstaculo")) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
             }
             return ResponseEntity.ok(result);
